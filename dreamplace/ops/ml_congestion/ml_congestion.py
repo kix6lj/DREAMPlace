@@ -10,12 +10,16 @@ from torch import nn
 from torch.autograd import Function
 import matplotlib.pyplot as plt
 import pdb
+import logging
 
 import dreamplace.ops.rudy.rudy as rudy
 import dreamplace.ops.pinrudy.pinrudy as pinrudy
+
 ############## Your code block begins here ##############
-# import your ML model 
+from dreamplace.ops.ml_congestion.routenet import RouteNet
 ############## Your code block ends here ################
+
+logger = logging.getLogger(__name__)
 
 class MLCongestion(nn.Module):
     """
@@ -49,13 +53,35 @@ class MLCongestion(nn.Module):
                  unit_vertical_capacity,
                  pretrained_ml_congestion_weight_file):
         super(MLCongestion, self).__init__()
-        ############## Your code block begins here ##############
-        ############## Your code block ends here ################
+        self.model = RouteNet(in_channels=3, out_channels=1)
+        self.model.init_weights(pretrained_ml_congestion_weight_file)
+        self.fixed_node_map_op = fixed_node_map_op
+        self.rudy_utilization_map_op = rudy_utilization_map_op
+        self.pinrudy_utilization_map_op = pinrudy_utilization_map_op
+        self.pin_pos_op = pin_pos_op
+        self.xl = xl
+        self.xh = xh
+        self.yl = yl
+        self.yh = yh
+        self.num_bins_x = num_bins_x
+        self.num_bins_y = num_bins_y
+        self.unit_horizontal_capacity = unit_horizontal_capacity
+        self.unit_vertical_capacity = unit_vertical_capacity
 
     def __call__(self, pos):
         return self.forward(pos)
 
     def forward(self, pos):
         ############## Your code block begins here ##############
-        return None
+        macro_map = self.fixed_node_map_op(pos)
+        rudy_utilization_map = self.rudy_utilization_map_op(pos)
+        pinrudy_utilization_map = self.pinrudy_utilization_map_op(pos)
+        input = torch.stack((macro_map, 
+                             rudy_utilization_map,
+                             pinrudy_utilization_map))
+        input = input[None, :]
+        self.model.to(device=input.device)
+        congestion_map = torch.squeeze(self.model(input), 0)
+        logger.info('congestion_sum {}'.format(congestion_map.sum()))
+        return congestion_map
         ############## Your code block ends here ################

@@ -1,7 +1,7 @@
 {
 "lef_input" : ["benchmarks/ispd2015/mgc_superblue19/tech.lef", "benchmarks/ispd2015/mgc_superblue19/cells.lef"],
 "def_input" : "benchmarks/ispd2015/mgc_superblue19/floorplan.def",
-"verilog_input" : "benchmarks/ispd_mlcong/mgc_superblue19/design.v",
+"verilog_input" : "benchmarks/ispd2015/mgc_superblue19/design.v",
 "gpu" : 1,
 "num_bins_x" : 512,
 "num_bins_y" : 512,

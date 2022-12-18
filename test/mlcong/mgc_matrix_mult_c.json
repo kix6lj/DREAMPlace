@@ -1,7 +1,7 @@
 {
-"lef_input" : ["benchmarks/ispd_mlcong/mgc_matrix_mult_c/tech.lef", "benchmarks/ispd_mlcong/mgc_matrix_mult_c/cells.lef"],
-"def_input" : "benchmarks/ispd_mlcong/mgc_matrix_mult_c/floorplan.def",
-"verilog_input" : "benchmarks/ispd_mlcong/mgc_matrix_mult_c/design.v",
+"lef_input" : ["benchmarks/ispd2015/mgc_matrix_mult_c/tech.lef", "benchmarks/ispd2015/mgc_matrix_mult_c/cells.lef"],
+"def_input" : "benchmarks/ispd2015/mgc_matrix_mult_c/floorplan.def",
+"verilog_input" : "benchmarks/ispd2015/mgc_matrix_mult_c/design.v",
 "gpu" : 1,
 "num_bins_x" : 512,
 "num_bins_y" : 512,

@@ -97,7 +97,7 @@ class DensityMap(object):
 
         density_map = self.initial_density_map
         for index_range in self.range_list: 
-            if index_range[0] < index_range[1]: 
+            if index_range[0] < index_range[1]:
                 density_map = DensityMapFunction.forward(
                     pos=pos,
                     node_size_x=self.node_size_x,

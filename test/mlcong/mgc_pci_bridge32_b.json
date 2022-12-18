@@ -1,7 +1,7 @@
 {
-"lef_input" : ["benchmarks/ispd_mlcong/mgc_pci_bridge32_b/tech.lef", "benchmarks/ispd_mlcong/mgc_pci_bridge32_b/cells.lef"],
-"def_input" : "benchmarks/ispd_mlcong/mgc_pci_bridge32_b/floorplan.def",
-"verilog_input" : "benchmarks/ispd_mlcong/mgc_pci_bridge32_b/design.v",
+"lef_input" : ["benchmarks/ispd2015/mgc_pci_bridge32_b/tech.lef", "benchmarks/ispd2015/mgc_pci_bridge32_b/cells.lef"],
+"def_input" : "benchmarks/ispd2015/mgc_pci_bridge32_b/floorplan.def",
+"verilog_input" : "benchmarks/ispd2015/mgc_pci_bridge32_b/design.v",
 "gpu" : 1,
 "num_bins_x" : 256,
 "num_bins_y" : 256,
