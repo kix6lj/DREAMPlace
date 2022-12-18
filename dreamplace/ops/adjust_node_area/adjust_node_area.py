@@ -177,6 +177,8 @@ class AdjustNodeArea(nn.Module):
                     self.route_opt_adjust_exponent).clamp_(
                         min=self.min_route_opt_adjust_rate,
                         max=self.max_route_opt_adjust_rate)
+                logging.error('%.3f, %.3f' % (self.min_route_opt_adjust_rate, self.max_route_opt_adjust_rate))
+                logging.error('overflow inflation max: %.3f, min: %.3f' % (route_utilization_map_clamp.min(), route_utilization_map_clamp.max()))
                 route_opt_area = self.compute_node_area_route(
                     pos, node_size_x, node_size_y, route_utilization_map_clamp)
             # compute pin density optimized area

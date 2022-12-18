@@ -110,6 +110,8 @@ class NonLinearPlace(BasicPlace.BasicPlace):
                     # "objective" : model.obj_fn,
                     "hpwl": self.op_collections.hpwl_op,
                     "overflow": self.op_collections.density_overflow_op,
+                    "ml_congestion": self.op_collections.ml_congestion_map_op,
+                    "shpwl": None
                 }
                 if params.routability_opt_flag:
                     eval_ops.update(
@@ -118,12 +120,12 @@ class NonLinearPlace(BasicPlace.BasicPlace):
                             "pin_utilization": self.op_collections.pin_utilization_map_op,
                         }
                     )
-                    if params.adjust_ml_congestion_area_flag:
-                        eval_ops.update(
-                            {
-                                "ml_congestion": self.op_collections.ml_congestion_map_op
-                            }
-                        )
+                    # if params.adjust_ml_congestion_area_flag:
+                    #    eval_ops.update(
+                    #        {
+                    #            "ml_congestion": self.op_collections.ml_congestion_map_op
+                    #        }
+                    #     )
                 if len(placedb.regions) > 0:
                     eval_ops.update(
                         {
@@ -519,7 +521,7 @@ class NonLinearPlace(BasicPlace.BasicPlace):
                         if (
                             params.routability_opt_flag
                             and num_area_adjust < params.max_num_area_adjust
-                            and Llambda_metrics[-1][-1].overflow < params.node_area_adjust_overflow
+                            and (Llambda_metrics[-1][-1].overflow < params.node_area_adjust_overflow).all()
                         ):
                             content = (
                                 "routability optimization round %d: adjust area flags = (%d, %d, %d)"
@@ -578,7 +580,7 @@ class NonLinearPlace(BasicPlace.BasicPlace):
                                 model.op_collections.pin_utilization_map_op.reset()
                                 model.initialize_density_weight(params, placedb)
                                 model.density_weight.mul_(0.1 / params.density_weight)
-                                logging.info("density_weight = %.6E" % (model.density_weight.data))
+                                # logging.info("density_weight = %.6E" % (model.density_weight.data))
                                 # load state to restart the optimizer
                                 optimizer.load_state_dict(initial_state)
                                 # must after loading the state
@@ -684,6 +686,17 @@ class NonLinearPlace(BasicPlace.BasicPlace):
             logging.info(cur_metric)
             iteration += 1
 
+        logging.info('--------------------------xx')
+        cur_metric = EvalMetrics.EvalMetrics(iteration)
+        cur_metric.evaluate(placedb, 
+                            {"hpwl": self.op_collections.hpwl_op,
+                             "ml_congestion": self.op_collections.ml_congestion_map_op,
+                             "shpwl": None
+                            }, 
+                            self.pos[0]
+                            )
+        logging.info(cur_metric)
+        logging.info('---------------------------xx')
         # save results
         cur_pos = self.pos[0].data.clone().cpu().numpy()
         # apply solution

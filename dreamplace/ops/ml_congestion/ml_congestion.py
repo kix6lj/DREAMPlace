@@ -82,6 +82,5 @@ class MLCongestion(nn.Module):
         input = input[None, :]
         self.model.to(device=input.device)
         congestion_map = torch.squeeze(self.model(input), 0)
-        logger.info('congestion_sum {}'.format(congestion_map.sum()))
-        return congestion_map
+        return congestion_map + 1.0
         ############## Your code block ends here ################

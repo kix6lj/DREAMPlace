@@ -7,6 +7,7 @@
 
 import time
 import torch
+import numpy as np
 import pdb
 
 class EvalMetrics (object):
@@ -36,6 +37,16 @@ class EvalMetrics (object):
         self.gamma = None
         self.eval_time = None
 
+        self.shpwl_flag = False
+        self.cong05 = None
+        self.cong1 = None
+        self.cong2 = None
+        self.cong5 = None
+        self.shpwl05 = None
+        self.shpwl1 = None
+        self.shpwl2 = None
+        self.shpwl5 = None
+
     def __str__(self):
         """
         @brief convert to string
@@ -60,7 +71,7 @@ class EvalMetrics (object):
             else:
                 content += ", DensityWeight [%s]" % ", ".join(["%.3E" % i for i in self.density_weight])
         if self.hpwl is not None:
-            content += ", HPWL %.6E" % (self.hpwl)
+            content += ", HPWL %.3E" % (self.hpwl)
         if self.rmst_wl is not None:
             content += ", RMSTWL %.3E" % (self.rmst_wl)
         if self.overflow is not None:
@@ -85,6 +96,11 @@ class EvalMetrics (object):
             content += ", gamma %.6E" % (self.gamma)
         if self.eval_time is not None:
             content += ", time %.3fms" % (self.eval_time*1000)
+        if self.shpwl_flag == True:
+            content += ', SHPWL: 0.5p({:.3f}, {:.4E})'.format(self.cong05, self.shpwl05) + \
+                ', 1p({:.3f}, {:.4E})'.format(self.cong1, self.shpwl1) + \
+                ', 2p({:.3f}, {:.4E})'.format(self.cong2, self.shpwl2) + \
+                ', 5p({:.3f}, {:.4E})'.format(self.cong5, self.shpwl5)
 
         return content
 
@@ -139,4 +155,27 @@ class EvalMetrics (object):
                 ml_congestion_map = ops["ml_congestion"](var)
                 ml_congestion_map_sum = ml_congestion_map.sum()
                 self.ml_congestion = ml_congestion_map.sub_(1).clamp_(min=0).sum() / ml_congestion_map_sum
+            if "shpwl" in ops:
+                self.shpwl_flag = True
+
+                with torch.no_grad():
+                    ml_congestion_map = ops["ml_congestion"](var)
+                    overflows = torch.flatten(ml_congestion_map).cpu().numpy()
+                    overflows = np.sort(overflows)* 100
+
+                    percent05 = int(len(overflows) * 0.005)
+                    percent1 = int(len(overflows) * 0.01)
+                    percent2 = int(len(overflows) * 0.02)
+                    percent5 = int(len(overflows) * 0.05)
+
+                    self.cong05 = max(overflows[-percent05:].mean(), 100)
+                    self.cong1 = max(overflows[-percent1:].mean(), 100)
+                    self.cong2 = max(overflows[-percent2:].mean(), 100)
+                    self.cong5 = max(overflows[-percent5:].mean(), 100)
+
+                    self.shpwl05 = self.hpwl * (1 + 0.03 * 100 * self.cong05)
+                    self.shpwl1 = self.hpwl * (1 + 0.03 * 100 * self.cong1)
+                    self.shpwl2 = self.hpwl * (1 + 0.03 * 100 * self.cong2)
+                    self.shpwl5 = self.hpwl * (1 + 0.03 * 100 * self.cong5)
+
         self.eval_time = time.time() - tt

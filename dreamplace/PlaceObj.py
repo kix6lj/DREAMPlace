@@ -246,21 +246,32 @@ class PlaceObj(nn.Module):
             params, placedb, self.data_collections)
         self.op_collections.noise_op = self.build_noise(
             params, placedb, self.data_collections)
+        
+        ### We need to compute the congestion map for every cases in the evaluation!
+        self.op_collections.rudy_utilization_map_op = self.build_rudy_utilization_map(
+            params, placedb, self.data_collections)
+        self.op_collections.pinrudy_utilization_map_op = self.build_pinrudy_utilization_map(
+            params, placedb, self.data_collections)
+        self.op_collections.pin_utilization_map_op = self.build_pin_utilization_map(
+            params, placedb, self.data_collections)
+        self.op_collections.ml_congestion_map_op = self.build_ml_congestion_map(
+                    params, placedb, self.data_collections)
+        
         if params.routability_opt_flag:
             # compute congestion map, RISA/RUDY congestion map
-            self.op_collections.rudy_utilization_map_op = self.build_rudy_utilization_map(
-                params, placedb, self.data_collections)
-            self.op_collections.pinrudy_utilization_map_op = self.build_pinrudy_utilization_map(
-                params, placedb, self.data_collections)
-            self.op_collections.pin_utilization_map_op = self.build_pin_utilization_map(
-                params, placedb, self.data_collections)
+            # self.op_collections.rudy_utilization_map_op = self.build_rudy_utilization_map(
+            #    params, placedb, self.data_collections)
+            # self.op_collections.pinrudy_utilization_map_op = self.build_pinrudy_utilization_map(
+            #    params, placedb, self.data_collections)
+            # self.op_collections.pin_utilization_map_op = self.build_pin_utilization_map(
+            #    params, placedb, self.data_collections)
             if params.adjust_nctugr_area_flag: 
                 self.op_collections.nctugr_congestion_map_op = self.build_nctugr_congestion_map(
                     params, placedb, self.data_collections)
             # require rudy_utilization_map_op and pinrudy_utilization_map_op defined first 
-            if params.adjust_ml_congestion_area_flag: 
-                self.op_collections.ml_congestion_map_op = self.build_ml_congestion_map(
-                    params, placedb, self.data_collections)
+            # if params.adjust_ml_congestion_area_flag: 
+            #    self.op_collections.ml_congestion_map_op = self.build_ml_congestion_map(
+            #        params, placedb, self.data_collections)
             # adjust instance area with congestion map
             self.op_collections.adjust_node_area_op = self.build_adjust_node_area(
                 params, placedb, self.data_collections)

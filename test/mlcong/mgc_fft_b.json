@@ -25,7 +25,7 @@
 "plot_flag" : 0,
 "random_center_init_flag" : 1,
 "sort_nets_by_degree" : 0,
-"routability_opt_flag" : 0,
+"routability_opt_flag" : 1,
 "max_num_area_adjust" : 5, 
 "route_num_bins_x" : 256, 
 "route_num_bins_y" : 256, 
